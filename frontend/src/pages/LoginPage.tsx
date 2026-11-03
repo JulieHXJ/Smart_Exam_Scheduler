@@ -1,14 +1,17 @@
-import { LoginForm } from "@/features/auth/components/LoginForm"
+import { LoginForm } from "@/features/auth/components/LoginForm";
 
 export function LoginPage() {
   return (
-    <div className="w-full max-w-[440px] rounded-2xl border bg-card p-9 shadow-sm">
-      <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
-      <p className="mb-8 mt-2 text-sm text-muted-foreground">Log in to continue.</p>
-      <LoginForm />
-      <p className="mt-6 border-t pt-5 text-center text-xs text-muted-foreground">
-        Use your university administration credentials.
+    <div className="w-full max-w-[560px] text-center">
+      <h1 className="text-4xl font-bold tracking-tight">
+        Enter your THA email address to sign in
+      </h1>
+      <p className="mt-3 text-sm text-muted-foreground">
+        We'll email you a one-time code.
       </p>
+      <div className="mx-auto mt-10 max-w-[440px] text-left">
+        <LoginForm />
+      </div>
     </div>
-  )
+  );
 }
