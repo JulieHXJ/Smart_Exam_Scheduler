@@ -2,15 +2,17 @@ import pytest
 
 from fastapi.testclient import TestClient
 from app.main import app
-from app.auth.core import get_current_user
+from app.auth.core import get_current_user, require_admin
 
 
 @pytest.fixture(autouse=True)
 def authenticated_proposal_test():
-    app.dependency_overrides[get_current_user] = lambda: {
+    admin = {
         "email": "staff@example.org",
         "role": "admin",
     }
+
+    app.dependency_overrides[get_current_user] = lambda: admin
 
     yield
 
@@ -168,4 +170,38 @@ def test_reject_stale_proposal():
         assert current_schedules[CYCLE_ID] == "schedule_v1"
 
     finally:
+        reset_demo_state()
+
+
+
+def test_tester_cannot_confirm_proposal():
+    reset_demo_state()
+
+    try:
+        # Create a proposal using the admin test identity.
+        response = client.post(
+            f"/api/planning-cycles/{CYCLE_ID}/proposals"
+        )
+        assert response.status_code == 200
+
+        proposal_id = response.json()["proposal"]["id"]
+
+        # Simulate an authenticated tester.
+        app.dependency_overrides[get_current_user] = lambda: {
+            "email": "tester@example.org",
+            "role": "tester",
+        }
+
+        response = client.post(
+            f"/api/proposals/{proposal_id}/confirm"
+        )
+
+        assert response.status_code == 403
+
+        # The confirmed baseline must remain unchanged.
+        assert current_schedules[CYCLE_ID] == "schedule_v1"
+        assert proposal_id in proposals
+
+    finally:
+        app.dependency_overrides.pop(get_current_user, None)
         reset_demo_state()
