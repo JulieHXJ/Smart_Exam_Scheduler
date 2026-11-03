@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.auth.core import require_admin
 
 from app.data.demo_plan import (
     proposals,
@@ -53,7 +54,10 @@ def get_proposal(proposal_id: str):
 
 
 # POST /api/proposals/{proposal_id}/confirm
-@router.post("/{proposal_id}/confirm")
+@router.post(
+    "/{proposal_id}/confirm",
+    dependencies=[Depends(require_admin)],
+)
 def confirm_proposal(proposal_id: str):
 
     proposal = proposals.get(proposal_id)
