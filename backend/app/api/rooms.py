@@ -2,7 +2,7 @@
 from fastapi import APIRouter, HTTPException
 
 from app.data.mock_data import rooms
-from app.data.demo_plan import room_unavailability
+from app.data.demo_plan import room_unavailability, data_revision
 from app.models.room import RoomUnavailability
 
 
@@ -54,6 +54,8 @@ def update_room_unavailability(
 
     # Add a new block
     room_unavailability.append(data)
+
+    data_revision["value"] += 1
 
     return {
         "message": "Room availability updated",

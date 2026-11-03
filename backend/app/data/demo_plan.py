@@ -62,3 +62,13 @@ expected_students = {
     "exam_prog1": 25,
     "exam_db": 35,
 }
+
+
+# Generated proposals, not yet confirmed
+proposals: dict[str, Schedule] = {}
+
+# Metadata for safe confirmation
+proposal_metadata: dict[str, dict] = {}
+
+# Incremented whenever scheduling-relevant data changes
+data_revision = {"value": 0}
