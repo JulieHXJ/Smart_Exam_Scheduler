@@ -12,6 +12,17 @@ from app.data.demo_plan import (
 from app.validator.schedule import validate_schedule
 
 
+from fastapi import HTTPException
+
+from app.data.demo_plan import (
+    proposals,
+    proposal_metadata,
+    data_revision,
+)
+from app.generator.proposal import generate_proposal
+from app.generator.schedule_diff import compare_schedules
+
+
 router = APIRouter(
     prefix="/planning-cycles",
     tags=["Planning Cycles"],
@@ -89,4 +100,55 @@ def validate_current_schedule(cycle_id: str):
         "schedule_id": schedule.id,
         "valid": len(issues) == 0,
         "issues": issues,
+    }
+
+
+
+@router.post("/{cycle_id}/proposals")
+def create_schedule_proposal(cycle_id: str):
+
+    cycle = planning_cycles.get(cycle_id)
+
+    if cycle is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Planning cycle not found",
+        )
+
+    current_id = current_schedules.get(cycle_id)
+
+    # if no valid schedule, return 409 conflict.
+    if current_id is None:
+        raise HTTPException(
+            status_code=409,
+            detail="No baseline schedule available",
+        )
+
+    baseline = schedules[current_id]
+
+    proposal = generate_proposal(
+        baseline=baseline,
+        cycle=cycle,
+        exams=exams,
+        rooms=rooms,
+        unavailable=room_unavailability,
+        expected_students=expected_students,
+    )
+
+    if proposal is None:
+        raise HTTPException(
+            status_code=409,
+            detail="Could not generate a feasible proposal",
+        )
+
+    proposals[proposal.id] = proposal
+
+    proposal_metadata[proposal.id] = {
+        "baseline_id": baseline.id,
+        "data_revision": data_revision["value"],
+    }
+
+    return {
+        "proposal": proposal,
+        "diff": compare_schedules(baseline, proposal),
     }
