@@ -1,7 +1,7 @@
 # Smart Exam Scheduler — Developer Documentation
 
-**Status:** Working technical specification and implementation notes   
-**Updated:** October 2026
+**Status:** Planning workflow and email OTP backend implemented as development MVP; frontend integration and production hardening pending. 
+**Updated:** Nov 2026
 
 ## 1. Architectural goal
 
@@ -39,29 +39,35 @@ The current backend is organized around FastAPI routers, Pydantic models, mock d
 
 ```text
 backend/
-├── app/
-│   ├── main.py                  # FastAPI app
-│   ├── api/
-│   │   ├── router.py            
-│   │   ├── planning_cycles.py   
-│   │   ├── rooms.py             
-│   │   └── proposals.py         
-│   ├── data/
-│   │   ├── mock_data.py         # Static sample exams/rooms/students
-│   │   └── demo_plan.py        # In-memory cycle, schedule, room-block state
-│   ├── models/
-│   │   ├── exam.py
-│   │   ├── room.py
-│   │   ├── schedule.py
-│   │   ├── planning_cycle.py
-│   │   └── validator.py
-│   ├── validation/
-│   │   └── schedule.py          # Independent hard-constraint checks
-│   └── services/               # Proposal and diff logic
-├── test/
-│   ├── test_schedule_validation.py
-│   └── test_room_api.py
-└── requirements.txt
+  app/
+    main.py
+    api/
+      router.py
+      auth.py
+      planning_cycle.py
+      rooms.py
+      proposals.py
+    auth/core.py
+    data/mock_data.py
+    data/demo_plan.py
+    validator/schedule.py
+    generator/proposal.py
+    generator/schedule_diff.py
+    models/...
+  test/
+    test_auth_api.py
+    test_proposal_api.py
+    test_room_api.py
+    test_schedule_validation.py
+  .env.example
+  requirements.txt
+frontend/
+  src/features/auth/components/LoginForm.tsx
+  src/pages/LoginPage.tsx
+  src/app/router.tsx
+  vite.config.ts
+mailpit.compose.yml
+DEV_DOC.md
 ```
 
 
@@ -104,23 +110,32 @@ validate_schedule(...)
 
 ## 6. API design
 
+### Authentication endpoints
 
-### Prototype endpoints
-
-| Method | Route | Behavior |
+| Method | Endpoint | Behavior |
 | --- | --- | --- |
-| GET | `/api/exams` | Return mock examinations |
-| GET | `/api/rooms` | Return mock rooms |
-| GET | `/api/students` | Return mock students |
-| GET | `/api/registrations` | Return mock registrations |
+| POST | `/api/auth/request-code` | JSON `{ "email": "..." }`; generic response regardless of whether allowlisted |
+| POST | `/api/auth/verify-code` | JSON `{ "email": "...", "code": "..." }`; validates and sets session cookie |
+| GET | `/api/auth/me` | Current authenticated email and role |
+| POST | `/api/auth/logout` | Invalidate and clear session cookie |
+
+
+### Planning endpoints
+
+| Method | Endpoint | Behavior |
+| --- | --- | --- |
+| GET | `/api/exams` | Mock examinations |
+| GET | `/api/rooms` | Mock rooms |
+| GET | `/api/students` | Mock students |
+| GET | `/api/registrations` | Mock registrations |
 | GET | `/api/planning-cycles` | List cycles |
-| GET | `/api/planning-cycles/{cycle_id}` | Get cycle metadata |
-| GET | `/api/planning-cycles/{cycle_id}/schedules/current` | Read current confirmed version |
-| PUT | `/api/rooms/{room_id}/unavailability` | Add/replace a blocked room interval |
-| POST | `/api/planning-cycles/{cycle_id}/validate` | Check the current confirmed schedule |
-| POST | `/api/planning-cycles/{cycle_id}/proposals` | Generate a candidate using the current confirmed schedule |
-| GET | `/api/proposals/{proposal_id}` | Return proposal and baseline diff |
-| POST | `/api/proposals/{proposal_id}/confirm` | Revalidate and save a confirmed new version |
+| GET | `/api/planning-cycles/{cycle_id}` | Read cycle |
+| GET | `/api/planning-cycles/{cycle_id}/schedules/current` | Current confirmed schedule |
+| PUT | `/api/rooms/{room_id}/unavailability` | Add/update blocked interval |
+| POST | `/api/planning-cycles/{cycle_id}/validate` | Validate current schedule |
+| POST | `/api/planning-cycles/{cycle_id}/proposals` | Generate proposal |
+| GET | `/api/proposals/{proposal_id}` | Proposal and diff |
+| POST | `/api/proposals/{proposal_id}/confirm` | Confirm new version |
 
 
 
@@ -145,25 +160,31 @@ Run unit tests from `backend/`:
 python -m pytest -v
 ```
 
-**Reported local baseline:** 9 passing tests as of the room-availability API milestone. The newer proposal services and APIs have not yet been verified as complete.
+For local SMTP testing, from the project root:
+```
+docker compose -f mailpit.compose.yml up -d
+cp backend/.env.example backend/.env
+# Edit the allowlisted email addresses and AUTH_SECRET.
+set -a
+source backend/.env
+set +a
+cd backend
+python -m uvicorn app.main:app --reload
+```
 
-## 8. Limitations
+Mailpit UI: `http://localhost:8025`
+Swagger: `http://127.0.0.1:8000/docs`
 
-- All demo data is currently held in memory; it does not survive a restart.
-- Data import, automatic ExamEvent reconciliation, and real registration handling are not implemented.
-- Student/examiner clashes, soft constraints, special exam equipment, and faculty-specific rules need further work.
-- Multi-room and ExamSitting semantics are not finalized.
-- The initial generator is intended only as a heuristic demonstration.
-- No production-ready authorization, concurrent transaction safety, or audit trail yet.
-- PostgreSQL, frontend, and LLM integration are planned.
+End-to-end local check: request OTP → read in Mailpit → verify OTP → /api/auth/me returns the role → logout → /api/auth/me returns 401. Placeholder email addresses are valid only when Mailpit intercepts local messages.
 
 ## 9. Next milestones
 
-1. Implement and test the proposal generator and schedule diff.
-2. Add proposal read/confirm endpoints and stale-proposal prevention.
-3. Add tests verifying V1 is unchanged and V2 becomes current after confirmation.
-4. Build a minimal Vue Planning Workspace connected to the demonstrated API flow.
-5. Replace in-memory state with PostgreSQL and migration-backed persistence.
-6. Extend data import, ExamDefinition/ExamEvent reconciliation, and real scheduling constraints.
-7. Replace the heuristic generator with a constraint-based optimizer and later integrate AI-assisted replanning.
+1. React OTP integration (frontend owner): connect the four endpoints, remove password form, create protected routes.
+2. Backend authorization: admin-only proposal confirmation; decide tester permissions for every mutation; add negative tests.
+3. End-to-end integration: Mailpit, browser OTP, session persistence within one server run, logout, invalid/expired code/error UX.
+4. PostgreSQL: persist PlanningCycle, Schedule, room unavailability, proposals, OTP/session state; include migrations and safe updates.
+5. Planning Workspace: load cycle/schedule, visualize diffs, review constraints, generate/confirm proposals.
+6. Data pipeline: import reference data and later real registrations; reconcile exam events per cycle.
+7. Solver: expand hard/soft constraints, benchmark against greedy baseline, evaluate constraint solving / optimization.
+8. Delivery and AI: deployment/security review, audit trail/export, then AI-assisted analysis when deterministic rules are stable.
 
