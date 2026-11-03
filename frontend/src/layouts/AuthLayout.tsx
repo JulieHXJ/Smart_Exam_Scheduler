@@ -1,5 +1,5 @@
-import { Outlet } from "react-router-dom"
-import { Logo } from "@/components/logo"
+import { Outlet } from "react-router-dom";
+import { Logo } from "@/components/Logo";
 
 export function AuthLayout() {
   return (
@@ -11,5 +11,5 @@ export function AuthLayout() {
         <Outlet />
       </main>
     </div>
-  )
+  );
 }
