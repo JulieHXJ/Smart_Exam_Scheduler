@@ -1,7 +1,25 @@
+import pytest
 
 from fastapi.testclient import TestClient
-
 from app.main import app
+from app.auth.core import get_current_user
+
+
+@pytest.fixture(autouse=True)
+def authenticated_proposal_test():
+    app.dependency_overrides[get_current_user] = lambda: {
+        "email": "staff@example.org",
+        "role": "admin",
+    }
+
+    yield
+
+    app.dependency_overrides.pop(get_current_user, None)
+
+
+
+
+
 from app.data.demo_plan import (
     current_schedules,
     schedules,
@@ -10,6 +28,7 @@ from app.data.demo_plan import (
     room_unavailability,
     data_revision,
 )
+
 
 
 client = TestClient(app)

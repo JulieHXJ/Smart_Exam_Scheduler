@@ -1,4 +1,5 @@
-
+import pytest
+from app.auth.core import get_current_user, require_admin
 from fastapi.testclient import TestClient
 
 from app.main import app
@@ -6,6 +7,24 @@ from app.data.demo_plan import room_unavailability
 
 
 client = TestClient(app)
+
+
+@pytest.fixture(autouse=True)
+def authenticated_room_test():
+    # Simulate an authenticated admin user
+    test_admin = {
+        "email": "staff@example.org",
+        "role": "admin",
+    }
+
+    app.dependency_overrides[get_current_user] = lambda: test_admin
+    app.dependency_overrides[require_admin] = lambda: test_admin
+
+    yield
+
+    # Clean up after the test
+    app.dependency_overrides.pop(get_current_user, None)
+    app.dependency_overrides.pop(require_admin, None)
 
 
 def test_room_unavailability_triggers_conflict():
