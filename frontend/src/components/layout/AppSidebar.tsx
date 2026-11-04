@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import {
   CalendarDays,
   FileText,
@@ -34,10 +34,7 @@ const NAV: NavItem[] = [
 ];
 
 export function AppSidebar() {
-  const { pathname } = useLocation();
   const { state } = useSidebar();
-  const isActive = (to: string) =>
-    to === "/" ? pathname === "/" : pathname.startsWith(to);
 
   return (
     <Sidebar collapsible="icon">
@@ -56,10 +53,9 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   asChild
                   tooltip={item.title}
-                  isActive={isActive(item.to)}
-                  className="h-10 data-[active=true]:ring-1 data-[active=true]:ring-primary/60"
+                  className="h-10 aria-[current=page]:bg-sidebar-accent aria-[current=page]:font-medium aria-[current=page]:text-sidebar-accent-foreground aria-[current=page]:ring-1 aria-[current=page]:ring-primary/60"
                 >
-                  <NavLink to={item.to}>
+                  <NavLink to={item.to} end={item.to === "/"}>
                     <item.icon />
                     <span>{item.title}</span>
                   </NavLink>
