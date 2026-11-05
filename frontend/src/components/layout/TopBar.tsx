@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Bell, Search, Sparkles } from "lucide-react";
+import { Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -81,11 +81,6 @@ export function TopBar() {
 
         <ThemeToggle />
 
-        {/* Visual only; wired up when AI optimization exists */}
-        <Button className="h-10 gap-2">
-          <Sparkles className="size-4" />
-          Optimize with AI
-        </Button>
       </div>
     </header>
   );
