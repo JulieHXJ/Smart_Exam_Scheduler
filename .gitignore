@@ -19,3 +19,8 @@ __pycache__/
 *.db
 *.sqlite
 *.sqlite3
+
+# Desktop app build artifacts
+/frontend/dist/
+/backend/build/
+/backend/dist/
