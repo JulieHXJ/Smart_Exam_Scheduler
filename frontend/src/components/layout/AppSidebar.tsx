@@ -30,7 +30,7 @@ const NAV: NavItem[] = [
   { title: "Home", to: "/", icon: House },
   { title: "Planning", to: "/planning", icon: FileText },
   { title: "Schedule", to: "/schedule", icon: CalendarDays },
-  { title: "Conflicts", to: "/conflicts", icon: TriangleAlert, badge: 3 }, // placeholder count
+  { title: "Conflicts", to: "/conflicts", icon: TriangleAlert, badge: 3 },
 ];
 
 export function AppSidebar() {
@@ -72,7 +72,6 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="gap-3">
-        {/* Placeholder numbers until real schedule data exists */}
         <div className="rounded-xl border border-sidebar-border p-4 group-data-[collapsible=icon]:hidden">
           <div className="flex items-center justify-between text-xs">
             <span>Schedule readiness</span>

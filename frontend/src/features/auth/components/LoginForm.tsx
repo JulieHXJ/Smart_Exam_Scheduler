@@ -18,7 +18,6 @@ export function LoginForm() {
     setBusy(true);
     setError(null);
     try {
-      // The backend answers generically, even for addresses that aren't allowed.
       await requestCode(normalized);
       navigate("/login/code", { state: { email: normalized } });
     } catch (err) {
