@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: smart_exam
+      POSTGRES_USER: smart_exam
+      POSTGRES_PASSWORD: smart_exam
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - smart_exam_db:/var/lib/postgresql/data
+volumes:
+  smart_exam_db:
