@@ -1,0 +1,43 @@
+name: build-windows
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/desktop-app
+    tags: ["v*"]
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/build-windows.yml"
+      - "backend/**"
+      - "frontend/**"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12" # use the version you develop with
+          cache: pip
+      - name: Build frontend
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run build
+      - name: Build app
+        working-directory: backend
+        run: |
+          pip install -r requirements-desktop.txt pyinstaller
+          pyinstaller SmartExam.spec --noconfirm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SmartExam-windows
+          path: backend/dist/SmartExam
