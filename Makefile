@@ -6,7 +6,7 @@ SHELL := /bin/bash
 PYTHON := .venv/bin/python
 COMPOSE := docker compose -f mailpit.compose.yml
 
-.PHONY: help dev api web mailpit stop test install status
+.PHONY: help dev api web mailpit stop test install status db-up migrate
 
 .DEFAULT_GOAL := help
 
@@ -59,3 +59,9 @@ install:
 # Check Mailpit container
 status:
 	$(COMPOSE) ps
+
+db-up:
+	docker compose -f postgres.compose.yml up -d
+
+migrate:
+	.venv/bin/alembic -c backend/alembic.ini upgrade head
