@@ -20,7 +20,6 @@ const ROLE_LABEL = {
   tester: "Test account",
 } as const;
 
-// "claudia.papenfuss@tha.de" -> "Claudia Papenfuss"
 function displayName(email: string) {
   return email
     .split("@")[0]

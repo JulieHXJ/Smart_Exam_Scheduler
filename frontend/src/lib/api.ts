@@ -17,7 +17,7 @@ export async function api<T>(path: string, init?: RequestInit): Promise<T> {
     try {
       detail = (await res.json()).detail ?? detail;
     } catch {
-      /* non-JSON error body */
+      detail = res.statusText;
     }
     throw new ApiError(
       res.status,

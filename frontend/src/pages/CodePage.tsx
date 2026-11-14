@@ -11,7 +11,6 @@ import { requestCode, verifyCode } from "@/features/auth/api";
 import { useAuth } from "@/features/auth/store";
 import { ApiError } from "@/lib/api";
 
-// Backend alphabet: A-Z and 2-9 without I, O, 0, 1.
 const CODE_PATTERN = "^[A-HJ-NP-Za-hj-np-z2-9]*$";
 const RESEND_SECONDS = 30;
 

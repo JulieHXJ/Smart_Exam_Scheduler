@@ -5,7 +5,6 @@ import { Input } from "@/components/ui/input";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ThemeToggle } from "./ThemeToggle";
 
-// Placeholder terms until real planning cycles are connected
 const TERMS = [
   { value: "ws2026", label: "Winter semester 2026/27" },
   { value: "ss2026", label: "Summer semester 2026" },
@@ -15,7 +14,6 @@ export function TopBar() {
   const [term, setTerm] = useState(TERMS[0].value);
   const searchRef = useRef<HTMLInputElement>(null);
 
-  // Ctrl/Cmd + K focuses the search field
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
