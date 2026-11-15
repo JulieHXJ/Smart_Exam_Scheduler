@@ -6,7 +6,11 @@ Smart Exam Scheduler is a TH Augsburg project for planning final exams. It check
 
 ## Local setup
 
-Install Python 3.12+, Node.js 22, Docker Compose, and Make. From the repository root:
+Run setup commands from the repository root. Install Python 3.12+, Node.js 22, and Docker with Compose. Start Docker before launching the app.
+
+### macOS or Linux
+
+Install Make, then run:
 
 ```bash
 python3 -m venv .venv
@@ -14,13 +18,32 @@ make install
 test -f backend/.env || cp backend/.env.example backend/.env
 ```
 
-Set your allowed sign-in email and a random `AUTH_SECRET` in `backend/.env`. The example `DATABASE_URL` matches the local PostgreSQL service.
+Set your allowlisted sign-in email and a random `AUTH_SECRET` in `backend/.env`. Then run `make dev` to start Mailpit, FastAPI, and Vite.
 
-```bash
-docker compose -f postgres.compose.yml up -d
-.venv/bin/alembic -c backend/alembic.ini upgrade head
-make dev
+### Windows (PowerShell)
+
+Run these commands once to set up the Windows virtual environment and install dependencies:
+
+```powershell
+py -3.12 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r backend\requirements.txt
+npm.cmd --prefix frontend ci
+if (-not (Test-Path backend\.env)) {
+    Copy-Item backend\.env.example backend\.env
+}
 ```
+
+Set your allowlisted sign-in email and a random `AUTH_SECRET` in `backend\.env`. For daily use, start Docker Desktop and run:
+
+```powershell
+.\dev.ps1
+```
+
+The script starts Mailpit and opens separate PowerShell windows for FastAPI and Vite. If PowerShell blocks the script, run `powershell -NoProfile -ExecutionPolicy Bypass -File .\dev.ps1` to allow it for that invocation.
+
+### PostgreSQL
+
+For work that uses PostgreSQL, see [database setup and migrations](DEV_DOC.md#database-setup-and-migrations). The scheduling demo uses in-memory data.
 
 ## Usage
 

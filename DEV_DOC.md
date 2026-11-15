@@ -141,41 +141,28 @@ validate_schedule(...)
 
 ## 7. Local development
 
-From the repository root:
+Follow the [local setup for your platform](README.md#local-setup). Start the full development stack with `make dev` on macOS or Linux, or `.\dev.ps1` from Windows PowerShell.
 
-```bash
-cd backend
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-python -m pip install pytest httpx
-python -m uvicorn app.main:app --reload
-```
+For local email testing, configure the allowed sign-in email, `AUTH_SECRET`, and the Mailpit SMTP settings in `backend/.env`. The example sets SMTP port `1025`. Restart FastAPI after changing the file.
 
-URL: `http://127.0.0.1:8000/docs`.
-
-Run unit tests from `backend/`:
-
-```bash
-python -m pytest -v
-```
-
-For local SMTP testing, from the project root:
-```
-docker compose -f mailpit.compose.yml up -d
-cp backend/.env.example backend/.env
-# Edit the allowlisted email addresses and AUTH_SECRET.
-set -a
-source backend/.env
-set +a
-cd backend
-python -m uvicorn app.main:app --reload
-```
-
-Mailpit UI: `http://localhost:8025`
-Swagger: `http://127.0.0.1:8000/docs`
+- [Mailpit UI](http://localhost:8025)
+- [Swagger](http://localhost:8000/docs)
 
 End-to-end local check: request OTP → read in Mailpit → verify OTP → /api/auth/me returns the role → logout → /api/auth/me returns 401. Placeholder email addresses are valid only when Mailpit intercepts local messages.
+
+### Database setup and migrations
+
+From the repository root, start PostgreSQL and check that it is ready:
+
+```text
+docker compose -f postgres.compose.yml up -d
+docker compose -f postgres.compose.yml exec db pg_isready -U smart_exam -d smart_exam
+```
+
+The example `DATABASE_URL` in `backend/.env.example` matches the local Compose service. Confirm that `backend/.env` has the corresponding value, then apply migrations:
+
+- macOS or Linux: `make migrate`
+- Windows PowerShell: `.\.venv\Scripts\python.exe -m alembic -c backend/alembic.ini upgrade head`
 
 ## 9. Next milestones
 
