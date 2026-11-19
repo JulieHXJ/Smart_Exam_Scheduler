@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.data.mock_data import rooms
 from app.data.demo_plan import room_unavailability, data_revision
-from app.models.room import RoomUnavailability
+from app.schemas.room import RoomUnavailability
 
 
 router = APIRouter(

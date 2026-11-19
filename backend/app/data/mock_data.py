@@ -1,7 +1,7 @@
-from app.models.exam import Exam, ExamCategory, ExamType
-from app.models.registration import Registration
-from app.models.room import Room, RoomType
-from app.models.student import Student
+from app.schemas.exam import Exam, ExamCategory, ExamType
+from app.schemas.registration import Registration
+from app.schemas.room import Room, RoomType
+from app.schemas.student import Student
 
 
 # 5 exams, 3 rooms, 10 students, and 20 registrations

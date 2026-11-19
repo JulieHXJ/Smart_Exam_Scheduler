@@ -12,7 +12,7 @@ from app.data.demo_plan import (
     expected_students,
 )
 from app.data.mock_data import exams, rooms
-from app.models.schedule import ScheduleStatus
+from app.schemas.schedule import ScheduleStatus
 from app.generator.schedule_diff import compare_schedules
 from app.validator.schedule import validate_schedule
 

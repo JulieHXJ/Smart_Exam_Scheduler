@@ -1,5 +1,5 @@
 
-from app.models.validator import ValidationIssue
+from app.schemas.validator import ValidationIssue
 from app.validator.schedule import validate_schedule
 
 from datetime import date, time, timedelta
@@ -7,7 +7,7 @@ from itertools import combinations
 
 from uuid import uuid4
 
-from app.models.schedule import (
+from app.schemas.schedule import (
     ScheduleAssignment,
     Schedule,
     ScheduleStatus,

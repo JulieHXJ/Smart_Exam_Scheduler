@@ -1,0 +1,22 @@
+{
+  "program_code": "IIS",
+  "spo_version": "2024",
+  "source_file": "minimal IIS 2024 acceptance fixture",
+  "exams": [
+    {
+      "exam_number": "9872030",
+      "title": "Database Systems",
+      "duration_minutes": 90,
+      "exam_type": "written",
+      "recommended_semester": 3,
+      "is_mandatory": true
+    }
+  ],
+  "prerequisites": [
+    {
+      "exam_number": "9872030",
+      "prerequisite_number": "9872040",
+      "title": "Practical work Database Systems"
+    }
+  ]
+}

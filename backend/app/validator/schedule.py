@@ -1,12 +1,12 @@
 
 from datetime import datetime, timedelta
 
-from app.models.schedule import Schedule
-from app.models.exam import Exam
-from app.models.room import Room
-from app.models.planning_cycle import PlanningCycle
+from app.schemas.schedule import Schedule
+from app.schemas.exam import Exam
+from app.schemas.room import Room
+from app.schemas.planning_cycle import PlanningCycle
 
-from app.models.validator import (
+from app.schemas.validator import (
     ConflictType,
     ValidationIssue,
 )

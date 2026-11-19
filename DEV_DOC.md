@@ -164,6 +164,10 @@ The example `DATABASE_URL` in `backend/.env.example` matches the local Compose s
 - macOS or Linux: `make migrate`
 - Windows PowerShell: `.\.venv\Scripts\python.exe -m alembic -c backend/alembic.ini upgrade head`
 
+### Study plan import
+
+See [StudyPlan, ExamDefinition and BZV import](docs/study-plan-import.md) for file validation, PDF preview, database import, version checks and acceptance steps. Apply Alembic migration 0002 before database preview or import.
+
 ## 9. Next milestones
 
 1. React OTP integration (frontend owner): connect the four endpoints, remove password form, create protected routes.
