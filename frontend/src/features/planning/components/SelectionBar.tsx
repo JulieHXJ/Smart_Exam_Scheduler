@@ -1,13 +1,17 @@
+import { useState } from "react";
 import { Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSelection } from "../selection-store";
+import { GenerateDraftDialog } from "../draft/components/GenerateDraftDialog";
 
 type Props = { visibleIds: string[] };
 
 export function SelectionBar({ visibleIds }: Props) {
-  const count = useSelection((state) => state.selected.size);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const selected = useSelection((state) => state.selected);
   const setMany = useSelection((state) => state.setMany);
   const clear = useSelection((state) => state.clear);
+  const count = selected.size;
   if (count === 0) return null;
 
   return (
@@ -27,14 +31,15 @@ export function SelectionBar({ visibleIds }: Props) {
       >
         Clear
       </button>
-      <Button
-        disabled
-        title="Available once schedule generation is connected"
-        className="ml-auto gap-2"
-      >
+      <Button className="ml-auto gap-2" onClick={() => setDialogOpen(true)}>
         <Wand2 className="size-4" />
         Generate schedule draft
       </Button>
+      <GenerateDraftDialog
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        examIds={[...selected]}
+      />
     </div>
   );
 }
