@@ -1,10 +1,12 @@
+""""Database models for the backend."""
+
 from datetime import date
 from enum import Enum
 
 import sqlalchemy as sa
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
-from app.models.room import RoomType
+from app.schemas.room import RoomType
 
 
 class Base(DeclarativeBase):
@@ -117,3 +119,23 @@ class Room(Base):
                 native_enum=False, create_constraint=True, validate_strings=True, name="room_type")
     )
     overbooking_factor: Mapped[float | None]
+
+
+class ExamPrerequisite(Base):
+    """A BZV that must be passed before taking an exam definition."""
+
+    __tablename__ = "exam_prerequisites"
+    __table_args__ = (
+        sa.UniqueConstraint(
+            "exam_definition_id", "prerequisite_number",
+            name="uq_exam_prerequisite_exam_number",
+        ),
+    )
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    exam_definition_id: Mapped[int] = mapped_column(
+        sa.ForeignKey("exam_definitions.id", ondelete="CASCADE"), index=True
+    )
+    prerequisite_number: Mapped[str] = mapped_column(sa.String(64))
+    title: Mapped[str] = mapped_column(sa.String(255))
+    exam_definition: Mapped[ExamDefinition] = relationship()

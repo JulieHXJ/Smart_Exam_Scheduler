@@ -1,5 +1,5 @@
 
-from app.models.schedule import Schedule
+from app.schemas.schedule import Schedule
 
 
 def compare_schedules(

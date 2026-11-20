@@ -2,14 +2,14 @@
 from datetime import date, time, datetime
 
 from app.data.mock_data import exams, rooms
-from app.models.schedule import (
+from app.schemas.schedule import (
     Schedule,
     ScheduleAssignment,
     ScheduleStatus,
 )
-from app.models.planning_cycle import PlanningCycle
-from app.models.room import RoomUnavailability
-from app.models.validator import ConflictType
+from app.schemas.planning_cycle import PlanningCycle
+from app.schemas.room import RoomUnavailability
+from app.schemas.validator import ConflictType
 from app.validator.schedule import validate_schedule
 
 
